@@ -6,6 +6,7 @@ import {
   Body,
   Param,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 // Fixed linting issues
 import { StellarWebhookService } from './services/stellar-webhook.service';
@@ -20,6 +21,8 @@ import { Roles } from '../rbac/decorators/roles.decorator';
 
 @Controller('api/v1/webhooks')
 export class WebhooksController {
+  private readonly logger = new Logger(WebhooksController.name);
+
   constructor(
     private readonly stellarWebhookService: StellarWebhookService,
     private readonly dispatcherService: WebhookDispatcherService,
@@ -30,8 +33,10 @@ export class WebhooksController {
   @Post('register')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async registerWebhook(@Body() _registrationDto: any) {
-    // Logic to register custom webhook URLs
+  async registerWebhook(@Body() registrationDto: any) {
+    this.logger.debug(
+      `Registering webhook: ${JSON.stringify(registrationDto)}`,
+    );
     return { success: true, message: 'Webhook registered successfully' };
   }
 
@@ -45,7 +50,8 @@ export class WebhooksController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
-  async unregisterWebhook(@Param('id') _id: string) {
+  async unregisterWebhook(@Param('id') id: string) {
+    this.logger.debug(`Unregistering webhook: ${id}`);
     return { success: true };
   }
 

@@ -1,7 +1,7 @@
 import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { HistoryQueryService } from './history-query.service';
-import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../../../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 
 @Controller('api/v1/audit/ownership')
 @UseGuards(JwtAuthGuard)

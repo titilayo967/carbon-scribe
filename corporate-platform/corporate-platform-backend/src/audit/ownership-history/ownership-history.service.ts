@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../../shared/database/prisma.service';
+import { PrismaService } from '../../shared/database/prisma.service';
 import { IOwnershipHistoryRecord, OwnershipEventType } from './interfaces/ownership.interface';
 
 @Injectable()

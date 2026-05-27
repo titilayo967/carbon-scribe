@@ -596,6 +596,7 @@ Response:
 ```
 
 ---
+
 ## GHG Protocol Service Module
 
 The backend now includes a dedicated GHG Protocol module at `src/ghg-protocol/` for Scope 1, 2, and 3 accounting backed by Prisma models, seeded emission factors, and audit-trail events.
@@ -627,3 +628,21 @@ npx prisma generate
 npx prisma migrate deploy
 npx prisma db seed
 ```
+
+---
+
+## 🛡️ Antivirus & Content Scanning
+
+All uploaded files are scanned for malware using ClamAV before being persisted or pinned to IPFS.
+
+- **Clean files** are accepted and processed as normal.
+- **Infected or suspicious files** are rejected, not stored, and a clear error is returned to the user.
+- All scan results are logged for audit and monitoring.
+- If ClamAV is unavailable or a scan fails, the upload is rejected and an error is returned.
+
+**Operational Guidance:**
+- Ensure ClamAV is running and accessible (default: TCP 127.0.0.1:3310).
+- Regularly update virus definitions (e.g., via `freshclam`).
+- Monitor logs for scan failures or suspicious activity.
+
+See [test/ipfs-antivirus.e2e-spec.ts](test/ipfs-antivirus.e2e-spec.ts) for test scenarios.

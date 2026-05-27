@@ -4,6 +4,7 @@ import axios from 'axios';
 import { createReadStream, unlink } from 'fs';
 import { IpfsConfig } from '../ipfs.config';
 import { PrismaService } from '../../shared/database/prisma.service';
+import * as NodeClam from 'clamscan';
 
 @Injectable()
 export class UploadService {
@@ -27,6 +28,56 @@ export class UploadService {
         return { cid: existing.ipfsCid, record: existing, idempotent: true };
       }
     }
+
+    // --- Antivirus scan step ---
+    let scanResult;
+    try {
+      const clamscan = await new NodeClam().init({
+        removeInfected: false,
+        quarantineInfected: false,
+        scanLog: null,
+        debugMode: false,
+        fileList: null,
+        scanRecursively: false,
+        clamdscan: {
+          socket: false,
+          host: '127.0.0.1',
+          port: 3310,
+          timeout: 60000,
+          localFallback: true,
+        },
+      });
+      if (file.path) {
+        scanResult = await clamscan.isInfected(file.path);
+      } else if (file.buffer) {
+        scanResult = await clamscan.scanBuffer(file.buffer);
+      } else {
+        return { error: 'No file data provided' };
+      }
+      if (scanResult && scanResult.isInfected) {
+        this.logger.warn(
+          `File ${file.originalname} failed antivirus scan: ${scanResult.viruses}`,
+        );
+        if (file.path) unlink(file.path, () => {});
+        return {
+          error: 'File failed antivirus scan',
+          details: scanResult.viruses,
+        };
+      }
+      this.logger.log(`File ${file.originalname} passed antivirus scan.`);
+    } catch (scanErr) {
+      this.logger.error(
+        `Antivirus scan error for ${file.originalname}:`,
+        scanErr,
+      );
+      if (file.path) unlink(file.path, () => {});
+      return {
+        error: 'Antivirus scan failed',
+        details: scanErr?.message || scanErr,
+      };
+    }
+    // --- End antivirus scan ---
+
     const form = new FormData();
     if (file.path) {
       form.append('file', createReadStream(file.path), {

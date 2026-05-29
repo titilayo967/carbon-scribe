@@ -1,8 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { IWebhookHandler, WebhookPayload } from '../../webhooks/interfaces/webhook.interface';
+import {
+  IWebhookHandler,
+  WebhookPayload,
+} from '../../webhooks/interfaces/webhook.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RetirementAggregation, RetirementAggregationDocument } from '../schemas/retirement-aggregation.schema';
+import {
+  RetirementAggregation,
+  RetirementAggregationDocument,
+} from '../schemas/retirement-aggregation.schema';
 
 @Injectable()
 export class RetirementAggregationHandler implements IWebhookHandler {
@@ -21,7 +27,13 @@ export class RetirementAggregationHandler implements IWebhookHandler {
     // Extract event data
     const event = payload.data;
     // Assume event has: retiredAt, entity, assetType, project, amount
-    if (!event.retiredAt || !event.entity || !event.assetType || !event.project || !event.amount) {
+    if (
+      !event.retiredAt ||
+      !event.entity ||
+      !event.assetType ||
+      !event.project ||
+      !event.amount
+    ) {
       this.logger.warn('Invalid retirement event payload', event);
       return;
     }

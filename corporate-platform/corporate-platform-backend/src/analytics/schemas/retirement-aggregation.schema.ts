@@ -23,4 +23,6 @@ export class RetirementAggregation {
 }
 
 export type RetirementAggregationDocument = RetirementAggregation & Document;
-export const RetirementAggregationSchema = SchemaFactory.createForClass(RetirementAggregation);
+export const RetirementAggregationSchema = SchemaFactory.createForClass(
+  RetirementAggregation,
+);

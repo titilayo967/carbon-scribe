@@ -34,6 +34,8 @@ import (
 	"carbon-scribe/project-portal/project-portal-backend/pkg/elastic"
 	"carbon-scribe/project-portal/project-portal-backend/pkg/storage"
 
+	"carbon-scribe/project-portal/project-portal-backend/internal/project/validation"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -119,11 +121,14 @@ func main() {
 	methodologyCapClient := integrationstellar.NewMethodologyClientFromEnv()
 	methodologyCapService := methodology.NewCapEnforcementService(methodologyCapRepo, methodologyRepo, methodologyCapClient)
 
+	// --- Methodology Compliance Validator ---
+	methodologyValidator := validation.NewMethodologyValidator(methodologyCapClient)
+
 	mintingCapValidator := minting.NewCapValidator(methodologyCapService)
 	mintingService := minting.NewService(db, nil, mintingCapValidator)
 	mintingHandler := minting.NewHandler(mintingService)
 
-	projectService := project.NewService(projectRepo, methodologyService, mintingService)
+	projectService := project.NewService(projectRepo, methodologyService, mintingService, validation.Validator(methodologyValidator))
 	projectHandler := project.NewHandler(projectService)
 
 	// Initialize document management service
@@ -256,6 +261,9 @@ func main() {
 
 		// Register all project and quality routes (no duplicates)
 		project.RegisterRoutes(router, projectHandler, qualityHandler)
+
+		// Register methodology validation endpoints
+		validation.RegisterValidationRoutes(v1, methodologyValidator)
 
 		// Register inventory routes under v1 (on-chain credit queries)
 		inventoryHandler.RegisterRoutes(v1)

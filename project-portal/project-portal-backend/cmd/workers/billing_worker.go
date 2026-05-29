@@ -318,8 +318,8 @@ func (w *BillingWorker) calculatePlanAmount(planID string) (amount, taxAmount fl
 		"enterprise": 299.99,
 	}
 
-	baseAmount := planPrices[planID]
-	if baseAmount == 0 {
+	baseAmount, ok := planPrices[planID]
+	if !ok {
 		baseAmount = 29.99 // Default to basic
 	}
 

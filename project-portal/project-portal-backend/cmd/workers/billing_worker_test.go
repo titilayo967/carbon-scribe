@@ -8,9 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"carbon-scribe/project-portal/project-portal-backend/internal/notifications"
 	"carbon-scribe/project-portal/project-portal-backend/internal/settings"
-	pkgbilling "carbon-scribe/project-portal/project-portal-backend/pkg/billing"
 
 	"github.com/google/uuid"
 )

@@ -757,6 +757,7 @@ mod test {
 
         client.initialize(&admin, &carbon_asset_contract, &false, &None, &86400);
 
+        let result = client.try_initialize(&admin, &carbon_asset_contract, &false, &None, &86400);
         assert_eq!(result, Err(Ok(TimeLockError::AlreadyInitialized)));
     }
 
@@ -773,7 +774,7 @@ mod test {
 
     #[test]
     fn test_set_ttl() {
-        let (env, admin, carbon_asset_contract, client) = setup();
+        let (_env, admin, carbon_asset_contract, client) = setup();
 
         client.initialize(&admin, &carbon_asset_contract, &false, &None, &86400);
 
@@ -816,23 +817,23 @@ mod test {
 
     #[test]
     fn test_batch_prune_expired_empty_batch() {
-        let (env, admin, carbon_asset_contract, client) = setup();
+        let (_env, admin, carbon_asset_contract, client) = setup();
 
         client.initialize(&admin, &carbon_asset_contract, &false, &None, &86400);
 
-        let token_ids = vec![&env];
+        let token_ids: Vec<u32> = vec![&_env];
         let result = client.try_batch_prune_expired(&token_ids, &10);
         assert_eq!(result, Err(Ok(TimeLockError::EmptyBatch)));
     }
 
     #[test]
     fn test_batch_prune_expired_not_configured() {
-        let (env, admin, carbon_asset_contract, client) = setup();
+        let (_env, admin, carbon_asset_contract, client) = setup();
 
         client.initialize(&admin, &carbon_asset_contract, &false, &None, &0);
 
-        let mut token_ids = vec![&env];
-        token_ids.push_back(&1);
+        let mut token_ids: Vec<u32> = vec![&_env];
+        token_ids.push_back(1);
         let result = client.try_batch_prune_expired(&token_ids, &10);
         assert_eq!(result, Err(Ok(TimeLockError::TtlNotConfigured)));
     }

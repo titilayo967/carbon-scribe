@@ -405,7 +405,6 @@ impl TimeLock {
     }
 
     /// Admin-only override to release a token before its unlock time.
-
     pub fn force_release(env: Env, token_id: u32) -> Result<(), TimeLockError> {
         Self::require_initialized(&env)?;
 
@@ -477,9 +476,7 @@ impl TimeLock {
     }
 
     pub fn get_ttl_config(env: Env) -> Option<TtlConfig> {
-        env.storage()
-            .instance()
-            .get(&DataKey::TtlConfig)
+        env.storage().instance().get(&DataKey::TtlConfig)
     }
 
     // -----------------------------------------------------------------------
@@ -511,7 +508,9 @@ impl TimeLock {
         let record = records.get(token_id).ok_or(TimeLockError::NotLocked)?;
 
         let now = env.ledger().timestamp();
-        let expiry_threshold = record.unlock_timestamp.saturating_add(ttl_config.ttl_seconds);
+        let expiry_threshold = record
+            .unlock_timestamp
+            .saturating_add(ttl_config.ttl_seconds);
 
         if now < expiry_threshold {
             return Err(TimeLockError::LockNotExpired);
@@ -574,7 +573,9 @@ impl TimeLock {
             }
 
             if let Some(record) = records.get(token_id) {
-                let expiry_threshold = record.unlock_timestamp.saturating_add(ttl_config.ttl_seconds);
+                let expiry_threshold = record
+                    .unlock_timestamp
+                    .saturating_add(ttl_config.ttl_seconds);
 
                 if now >= expiry_threshold {
                     records.remove(token_id);
@@ -728,7 +729,7 @@ impl TimeLock {
 #[cfg(test)]
 mod test {
     use super::{TimeLock, TimeLockClient, TimeLockError};
-    use soroban_sdk::{testutils::Address as _, Address, Env, vec};
+    use soroban_sdk::{testutils::Address as _, vec, Address, Env, Vec};
 
     fn setup() -> (Env, Address, Address, TimeLockClient<'static>) {
         let env = Env::default();

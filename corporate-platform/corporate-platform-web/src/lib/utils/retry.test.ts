@@ -60,9 +60,8 @@ describe('retry', () => {
       // Use expect().rejects with the promise directly
       const promise = withRetry(fn, { maxAttempts: 2, initialDelayMs: 100 });
       
-      // Advance timers to trigger retries
-      await vi.advanceTimersByTimeAsync(100);
-      await vi.advanceTimersByTimeAsync(100);
+      // Run all timers to complete retries
+      await vi.runAllTimersAsync();
       
       // Now the promise should be rejected
       await expect(promise).rejects.toThrow('Network error');

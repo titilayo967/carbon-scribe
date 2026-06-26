@@ -198,7 +198,7 @@ export default function DeveloperProjectMonitoringPage() {
           {/* Satellite insights with geospatial data */}
           <section aria-label="Satellite Insights" aria-busy={statusLoading}>
             <h2 className="text-lg font-bold text-gray-800 mb-3 ml-1">Satellite Insights</h2>
-            <SatelliteInsights />
+            <SatelliteInsights projectId={projectId} />
           </section>
 
           {/* Active alerts */}
